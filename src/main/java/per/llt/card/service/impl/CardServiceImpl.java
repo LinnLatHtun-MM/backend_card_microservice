@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import per.llt.card.constants.CardsConstants;
 import per.llt.card.dto.CardsDto;
 import per.llt.card.entity.Cards;
+import per.llt.card.exception.CardsAlreadyException;
+import per.llt.card.exception.ResourceNotFoundException;
 import per.llt.card.mapper.CardsMapper;
 import per.llt.card.repo.CardsRepository;
 import per.llt.card.service.ICardsService;
@@ -22,7 +24,7 @@ public class CardServiceImpl implements ICardsService {
     public void createCard(String mobileNumber) {
         Optional<Cards> existingCard = cardsRepository.findByMobileNumber(mobileNumber);
         if (existingCard.isPresent()) {
-//            throw new Exception("Card already exists");
+            throw new CardsAlreadyException("Card already registered with given mobileNumber " + mobileNumber);
         }
         cardsRepository.save(createNewCard(mobileNumber));
     }
@@ -50,9 +52,9 @@ public class CardServiceImpl implements ICardsService {
      */
     @Override
     public CardsDto fetchCard(String mobileNumber) {
-        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow();
-        CardsDto cardsDto = CardsMapper.mapToCardsDto(cards, new CardsDto());
-        return cardsDto;
+        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber));
+        return CardsMapper.mapToCardsDto(cards, new CardsDto());
     }
 
 
@@ -64,7 +66,8 @@ public class CardServiceImpl implements ICardsService {
     public boolean updateCard(CardsDto cardsDto) {
         boolean isUpdated = false;
         if (cardsDto != null) {
-            Cards cards = cardsRepository.findByCardNumber(cardsDto.getCardNumber()).orElseThrow();
+            Cards cards = cardsRepository.findByCardNumber(cardsDto.getCardNumber()).orElseThrow(
+                    () -> new ResourceNotFoundException("Card", "CardNumber", cardsDto.getCardNumber()));
             CardsMapper.mapToCards(cardsDto, cards);
             cardsRepository.save(cards);
             return isUpdated = true;
@@ -80,7 +83,8 @@ public class CardServiceImpl implements ICardsService {
     public boolean deleteCard(String mobileNumber) {
         boolean isDeleted = false;
         if (mobileNumber != null) {
-            Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow();
+            Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                    () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber));
             cardsRepository.delete(cards);
             return isDeleted = true;
         }
