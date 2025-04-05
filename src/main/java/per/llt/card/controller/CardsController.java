@@ -22,7 +22,7 @@ import per.llt.card.service.ICardsService;
 
 @Tag(name = "CRUD Rest APIs for Cards", description = "CREATE, FETCH, UPDATE, DELETE APIs for cards")
 @RestController
-@RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/api/v1", produces = {MediaType.APPLICATION_JSON_VALUE})
 @Validated
 public class CardsController {
 
