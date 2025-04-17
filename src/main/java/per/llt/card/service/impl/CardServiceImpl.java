@@ -8,6 +8,7 @@ import per.llt.card.entity.Cards;
 import per.llt.card.exception.CardsAlreadyException;
 import per.llt.card.exception.ResourceNotFoundException;
 import per.llt.card.mapper.CardsMapper;
+import per.llt.card.mapper.GenericMapper;
 import per.llt.card.repo.CardsRepository;
 import per.llt.card.service.ICardsService;
 
@@ -54,7 +55,10 @@ public class CardServiceImpl implements ICardsService {
     public CardsDto fetchCard(String mobileNumber) {
         Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber));
-        return CardsMapper.mapToCardsDto(cards, new CardsDto());
+
+        return GenericMapper.mapper(cards, CardsDto.class);
+
+//        return CardsMapper.mapToCardsDto(cards, new CardsDto());
     }
 
 
