@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+
+build:
+  version: "1.0"
+
+cards:
+  message: "Welcome to ABCBank Cards related Prod APIs"
+  contactDetails:
+    name: "Contact us at 1234567890"
+    email: "t8P8o@example.com"
+  onCallSupport:
+    - (555) 555-1234
+    - (555) 523-1345

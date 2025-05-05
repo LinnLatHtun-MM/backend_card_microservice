@@ -9,12 +9,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import per.llt.card.constants.CardsConstants;
+import per.llt.card.dto.CardContactInfoDto;
 import per.llt.card.dto.CardsDto;
 import per.llt.card.dto.ErrorResponseDto;
 import per.llt.card.dto.ResponseDto;
@@ -25,6 +28,15 @@ import per.llt.card.service.ICardsService;
 @RequestMapping(path = "/api/v1", produces = {MediaType.APPLICATION_JSON_VALUE})
 @Validated
 public class CardsController {
+
+    @Value("${build.version}")
+    private String buildVersion;
+
+    @Autowired
+    private Environment env;
+
+    @Autowired
+    private CardContactInfoDto cardContactInfoDto;
 
     @Autowired
     private ICardsService iCardsService;
@@ -95,5 +107,39 @@ public class CardsController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_DELETE));
         }
+    }
+
+
+    /**
+     * @This is 3 types how to get values from application.yaml
+     * 1. Using @Value Annotation /build-info
+     * 2. Using Environment class /java-version
+     * 3. Using @ConfigurationProperties and Record DTO /contact-info
+     */
+    @Operation(summary = "Get Build Information", description = "Get Build Information that is deployed into account microservice")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Http Status OK!!"),
+            @ApiResponse(responseCode = "500", description = "Http Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    @GetMapping("/build-info")
+    public ResponseEntity<String> getBuildInfo() {
+        return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+    }
+
+    @Operation(summary = "Get JAVA version", description = "Get Java Version that is deployed into account microservice")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Http Status OK!!"),
+            @ApiResponse(responseCode = "500", description = "Http Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    @GetMapping("/java-version")
+    public ResponseEntity<String> getJavaVersion() {
+        return ResponseEntity.status(HttpStatus.OK).body(env.getProperty("JAVA_HOME"));
+    }
+
+    @Operation(summary = "Get Contact Info", description = "Get Contact Info when application reached out any issues")
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Http Status OK!!"),
+            @ApiResponse(responseCode = "500", description = "Http Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    @GetMapping("/contact-info")
+    public ResponseEntity<CardContactInfoDto> getContactInfo() {
+        return ResponseEntity.status(HttpStatus.OK).body(cardContactInfoDto);
     }
 }
