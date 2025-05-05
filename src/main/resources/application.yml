@@ -1,6 +1,11 @@
+server:
+  port: 8082
+
 spring:
   application:
-    name: card-service
+    name: cards #name is as same as that declared in backend_spring_cloud_config_server "cards.yml"
+  profiles:
+    active: prod
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testDb
@@ -15,12 +20,4 @@ spring:
       ddl-auto: update
     show-sql: true
   config:
-    import:
-      - "application_qa.yml"
-      - "application_prod.yml"
-  profiles:
-    active:
-      - "qa"
-server:
-  port: 8082
-
+    import: "optional:configserver:http://localhost:8071/"
