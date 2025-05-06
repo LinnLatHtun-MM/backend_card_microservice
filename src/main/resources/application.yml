@@ -21,3 +21,12 @@ spring:
     show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"
+
+# This is especially important in a Spring Cloud Config Client or Config Server
+# if you want to dynamically reload config changes without restarting the service.
+# just call the endpoint http://localhost:8080/actuator/refresh
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
